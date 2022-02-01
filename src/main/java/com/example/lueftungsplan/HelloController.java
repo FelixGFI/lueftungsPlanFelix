@@ -23,6 +23,8 @@ public class HelloController {
     @FXML
     private Label label;
 
+
+    private Timer myTimer = new Timer();
     private ArrayList<LocalDateTime> alarmList = new ArrayList<>();
     private LocalDateTime startZeitpunkt;
     private DateTimeFormatter simpleTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -48,7 +50,6 @@ public class HelloController {
                 Instant instant = alarmZeitpunkt.atZone(ZoneId.of("Europe/Berlin")).toInstant();
                 Date alarmInstant = Date.from(instant);
 
-                Timer myTimer = new Timer();
                 myTimer.schedule(new TimerTask() {
 
                     @Override
@@ -106,7 +107,10 @@ public class HelloController {
 
     @FXML
     protected void onSchliessenButtonClick() {
+        myTimer.cancel();
         Stage stage = (Stage) this.label.getScene().getWindow();
         stage.close();
     }
+
+    // TODO setOnCloseRequest
 }

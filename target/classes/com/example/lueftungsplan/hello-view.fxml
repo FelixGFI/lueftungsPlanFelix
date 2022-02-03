@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
@@ -10,14 +11,14 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.lueftungsplan.HelloController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.lueftungsplan.HelloController">
    <left>
-      <FlowPane prefHeight="200.0" prefWidth="30.0" BorderPane.alignment="CENTER" />
+      <FlowPane prefHeight="200.0" prefWidth="25.0" BorderPane.alignment="CENTER" />
    </left>
    <top>
-      <FlowPane alignment="CENTER" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <FlowPane alignment="CENTER" prefHeight="25.0" prefWidth="300.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="label" text="Label" textAlignment="CENTER">
+            <Label fx:id="ueberschriftLabel" text="Label" textAlignment="CENTER">
                <font>
                   <Font size="18.0" />
                </font>
@@ -26,29 +27,29 @@
       </FlowPane>
    </top>
    <right>
-      <FlowPane prefHeight="200.0" prefWidth="30.0" BorderPane.alignment="CENTER" />
+      <FlowPane prefHeight="200.0" prefWidth="25.0" BorderPane.alignment="CENTER" />
    </right>
    <bottom>
-      <FlowPane alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <FlowPane alignment="CENTER" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Laden">
+            <Button mnemonicParsing="false" onAction="#onLadenButtonClick" prefHeight="25.0" prefWidth="111.0" text="Laden">
                <FlowPane.margin>
-                  <Insets bottom="10.0" left="10.0" top="10.0" />
+                  <Insets bottom="5.0" left="10.0" right="5.0" top="10.0" />
                </FlowPane.margin>
             </Button>
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Speichern">
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="110.0" text="Speichern">
                <FlowPane.margin>
-                  <Insets bottom="10.0" left="10.0" top="10.0" />
+                  <Insets bottom="5.0" left="5.0" right="10.0" top="10.0" />
                </FlowPane.margin>
             </Button>
-            <Button mnemonicParsing="false" onAction="#onStartButtonClick" prefHeight="25.0" prefWidth="100.0" text="Starten">
+            <Button mnemonicParsing="false" onAction="#onStartButtonClick" prefHeight="25.0" prefWidth="110.0" text="Starten">
                <FlowPane.margin>
-                  <Insets bottom="10.0" left="10.0" top="10.0" />
+                  <Insets bottom="10.0" left="10.0" right="5.0" top="5.0" />
                </FlowPane.margin>
             </Button>
-            <Button mnemonicParsing="false" onAction="#onSchliessenButtonClick" prefHeight="25.0" prefWidth="100.0" text="Schließen">
+            <Button mnemonicParsing="false" onAction="#onSchliessenButtonClick" prefHeight="25.0" prefWidth="110.0" text="Schließen">
                <FlowPane.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                  <Insets bottom="10.0" left="5.0" right="10.0" top="5.0" />
                </FlowPane.margin>
             </Button>
          </children>
@@ -57,14 +58,449 @@
    <center>
       <GridPane BorderPane.alignment="CENTER">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="265.0" minWidth="10.0" prefWidth="36.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="459.0" minWidth="10.0" prefWidth="214.0" />
         </columnConstraints>
         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
+         <children>
+            <FlowPane alignment="CENTER" prefHeight="54.0" prefWidth="198.0" GridPane.columnIndex="1">
+               <children>
+                  <TextField fx:id="tf1Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="75.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </Label>
+                  <TextField fx:id="tf1Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <TextField fx:id="tf2Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="75.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf2Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="75.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <children>
+                  <TextField fx:id="tf3Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf3Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+               <children>
+                  <TextField fx:id="tf4Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf4Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+               <children>
+                  <TextField fx:id="tf5Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf5Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+               <children>
+                  <TextField fx:id="tf6Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf6Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+               <children>
+                  <TextField fx:id="tf7Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf7Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+               <children>
+                  <TextField fx:id="tf8Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </Label>
+                  <TextField fx:id="tf8Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
+               <children>
+                  <TextField fx:id="tf9Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf9Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="9">
+               <children>
+                  <TextField fx:id="tf10Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf10Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
+               <children>
+                  <TextField fx:id="tf11Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf11Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="11">
+               <children>
+                  <TextField fx:id="tf12Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf12Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="12">
+               <children>
+                  <TextField fx:id="tf13Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </Label>
+                  <TextField fx:id="tf13Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin>
+                  </Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Label text="1" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+               <children>
+                  <Label text="2" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
+               <children>
+                  <Label text="3" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3">
+               <children>
+                  <Label text="4" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="53.0" prefWidth="20.0" GridPane.rowIndex="12">
+               <children>
+                  <Label text="13" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="11">
+               <children>
+                  <Label text="12" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="10">
+               <children>
+                  <Label text="11" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="9">
+               <children>
+                  <Label text="10" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="8">
+               <children>
+                  <Label text="9" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="39.0" GridPane.rowIndex="7">
+               <children>
+                  <Label text="8" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="4">
+               <children>
+                  <Label text="5" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="5">
+               <children>
+                  <Label text="6" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="6">
+               <children>
+                  <Label text="7" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="13">
+               <children>
+                  <TextField fx:id="tf14Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf14Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="13">
+               <children>
+                  <Label text="14" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="14">
+               <children>
+                  <Label text="15" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="14">
+               <children>
+                  <TextField fx:id="tf15Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf15Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="15">
+               <children>
+                  <Label text="16" />
+               </children>
+            </FlowPane>
+            <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="15">
+               <children>
+                  <TextField fx:id="tf16Stunde" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text=":">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+                  <TextField fx:id="tf16Minute" onAction="#onTextFieldEnterKeyPress" prefHeight="25.0" prefWidth="74.0">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></TextField>
+                  <Label text="Uhr">
+                     <FlowPane.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </FlowPane.margin></Label>
+               </children>
+            </FlowPane>
+         </children>
       </GridPane>
    </center>
 </BorderPane>

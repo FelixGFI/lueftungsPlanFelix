@@ -1,9 +1,6 @@
 package com.example.lueftungsplan;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -12,11 +9,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,11 +62,11 @@ public class HelloController {
 
     public Timer myTimer = new Timer();
     private ArrayList<LocalDateTime> alarmList = new ArrayList<>();
-    private LocalDateTime startZeitpunkt;
     private DateTimeFormatter simpleTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private Media media = new Media(new File("src/Media/Air-raid-siren.mp3").toURI().toString());
     private MediaPlayer mediaPlayer = new MediaPlayer(media);
     private ArrayList<TextField> tfListe;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM yyyy HH:mm:ss", Locale.ROOT);
 
     public static void  showDialog(HelloController controller) throws IOException {
         Stage stage = new Stage();
@@ -82,12 +77,10 @@ public class HelloController {
         stage.setTitle("Alarm");
         stage.setScene(scene);
 
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            public void handle(WindowEvent we) {
-                System.out.println("handle closing of program");
+        stage.setOnCloseRequest(we -> {
+            System.out.println("handle closing of program");
 
-                controller.closeWindow(stage);
-            }
+            controller.closeWindow(stage);
         });
 
        stage.show();
@@ -109,18 +102,16 @@ public class HelloController {
 
     //sets Chane Listener on a Textfield and Triggers the updateAllTextFields() Method when the respective Textfield is NO LONGER focused after being previously focused
     private void setOnFocusEvent(TextField tf) {
-        tf.focusedProperty().addListener(new ChangeListener<Boolean>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
+        tf.focusedProperty().addListener((arg0, oldPropertyValue, newPropertyValue) -> {
+            if (!newPropertyValue)
             {
-                if (!newPropertyValue)
-                {
-                    updateAllTextFieldValues(tfListe);
-                }
+                updateAllTextFieldValues(tfListe);
             }
         });
     }
+
+    /* WICHTIG! stundeText und minuteText müssen bei jeder änderung am inhalt der Textfelder geändert werden damit die Späteren überprüfungen
+    anhand von stundeText bzw. minuteText ordnungsgemäß funktionieren */
 
     private void updateAllTextFieldValues(ArrayList<TextField> textFelderListe) {
         for (int i = 0; i < textFelderListe.size(); i += 2) {
@@ -133,19 +124,29 @@ public class HelloController {
             if(!stundeText.equals("") && !minuteFeld.isFocused()) {
                 System.out.println("updateAllTextFieldValues() Stunde Exists");
 
+                System.out.println("|" + minuteText + "|");
                 if(minuteText.equals("")) {
-                    minuteFeld.setText("00");
+                    minuteText = "00";
+                    minuteFeld.setText(minuteText);
+                    System.out.println("minuteText.equals()");
                 }
 
+                System.out.println(minuteText.length());
+
                 if(stundeText.length() < 2) {
-                    stundeFeld.setText("0" + stundeText);
+                    stundeText = "0" + stundeText;
+                    stundeFeld.setText(stundeText);
+                    System.out.println("stundeText.length() < 2");
                 }
 
                 if(minuteText.length() < 2) {
-                    minuteFeld.setText("0" + minuteText);
+                    minuteText = "0" + minuteText;
+                    minuteFeld.setText(minuteText);
+                    System.out.println("minuteText.length() < 2");
                 }
             } else if((!stundeFeld.isFocused()) && stundeText.equals("")) {
-                minuteFeld.setText("");
+                minuteText = "";
+                minuteFeld.setText(minuteText);
             }
 
         }
@@ -168,7 +169,7 @@ public class HelloController {
         fuelleTextFields(this.tfListe);
     }
 
-    private void scheduleAllTasks(ArrayList<LocalDateTime> alarmZeitpunktListe) throws InterruptedException {
+    private void scheduleAllTasks(ArrayList<LocalDateTime> alarmZeitpunktListe) {
         myTimer.cancel();
         myTimer.purge();
         myTimer = new Timer();
@@ -240,22 +241,16 @@ public class HelloController {
             String dateString;
 
         if(tagDesMonats < 10 && monat < 10) {
-            dateString = new String("0" + tagDesMonats + " 0" + monat + " " + jahr + " ");
+            dateString = "0" + tagDesMonats + " 0" + monat + " " + jahr + " ";
         } else if(tagDesMonats < 10) {
-            dateString = new String("0" + tagDesMonats + " " + monat + " " + jahr + " ");
+            dateString = "0" + tagDesMonats + " " + monat + " " + jahr + " ";
         } else if(monat < 10) {
-            dateString = new String(+ tagDesMonats + " 0" + monat + " " + jahr + " ");
+            dateString = tagDesMonats + " 0" + monat + " " + jahr + " ";
         } else {
-            dateString = new String(tagDesMonats + " " + monat + " " + jahr + " ");
+            dateString = tagDesMonats + " " + monat + " " + jahr + " ";
         }
 
-
         System.out.println(dateString);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM yyyy HH:mm:ss", Locale.ROOT);
-
-        LocalDateTime parsedDate2 = LocalDateTime.parse("03 02 2022 18:30:00", formatter);
-
 
         for (int i = 0; i < textFelderListe.size(); i += 2) {
 
@@ -280,10 +275,7 @@ public class HelloController {
                 LocalDateTime parsedDate = LocalDateTime.parse(dateString + stundeString + ":" + minuteString + ":00", formatter);
 
                 alarmList.add(parsedDate);
-            } else {
-
             }
-
         }
     }
 
@@ -292,7 +284,7 @@ public class HelloController {
 
 
     @FXML
-    protected void onStartButtonClick() throws InterruptedException {
+    protected void onStartButtonClick() {
         auslesenTextFields(this.tfListe);
         scheduleAllTasks(alarmList);
     }
@@ -322,12 +314,6 @@ public class HelloController {
         int indexNext = (indexMomentan + 1) % this.tfListe.size();
         tfNext = this.tfListe.get(indexNext);
 
-        /*
-        if(indexMomentan <= this.tfListe.size() - 2) {
-            tfNext = this.tfListe.get(indexMomentan + 1);
-        } else {
-            tfNext = this.tfListe.get(0);
-        }*/
         tfNext.requestFocus();
     }
 

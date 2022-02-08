@@ -4,13 +4,13 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class LueftungsErinnerungApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
 
-        HelloController controller = new HelloController();
-        HelloController.showDialog(controller);
+        LueftungsErinnerungController controller = new LueftungsErinnerungController();
+        LueftungsErinnerungController.showDialog(controller);
     }
 
     public static void main(String[] args) {

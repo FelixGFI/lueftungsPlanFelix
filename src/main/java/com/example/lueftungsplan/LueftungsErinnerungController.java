@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Paint;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -21,7 +22,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class HelloController {
+public class LueftungsErinnerungController {
 
     @FXML private Label ueberschriftLabel = new Label();
 
@@ -68,18 +69,16 @@ public class HelloController {
     private ArrayList<TextField> tfListe;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM yyyy HH:mm:ss", Locale.ROOT);
 
-    public static void  showDialog(HelloController controller) throws IOException {
+    public static void  showDialog(LueftungsErinnerungController controller) throws IOException {
         Stage stage = new Stage();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(LueftungsErinnerungApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
 
         stage.setTitle("Alarm");
         stage.setScene(scene);
 
         stage.setOnCloseRequest(we -> {
-            System.out.println("handle closing of program");
-
             controller.closeWindow(stage);
         });
 
@@ -121,34 +120,30 @@ public class HelloController {
             String stundeText = stundeFeld.getText().trim();
             String minuteText = minuteFeld.getText().trim();
 
+
+
             if(!stundeText.equals("") && !minuteFeld.isFocused()) {
                 System.out.println("updateAllTextFieldValues() Stunde Exists");
-
-                System.out.println("|" + minuteText + "|");
                 if(minuteText.equals("")) {
                     minuteText = "00";
                     minuteFeld.setText(minuteText);
-                    System.out.println("minuteText.equals()");
                 }
-
-                System.out.println(minuteText.length());
 
                 if(stundeText.length() < 2) {
                     stundeText = "0" + stundeText;
                     stundeFeld.setText(stundeText);
-                    System.out.println("stundeText.length() < 2");
                 }
 
                 if(minuteText.length() < 2) {
                     minuteText = "0" + minuteText;
                     minuteFeld.setText(minuteText);
-                    System.out.println("minuteText.length() < 2");
                 }
+
             } else if((!stundeFeld.isFocused()) && stundeText.equals("")) {
                 minuteText = "";
                 minuteFeld.setText(minuteText);
             }
-
+            stundeMinuteIsValid(stundeFeld, minuteFeld, stundeText,minuteText);
         }
     }
 
@@ -227,18 +222,48 @@ public class HelloController {
     }
 
     private void auslesenTextFields(ArrayList<TextField> textFelderListe) {
-        alarmList = new ArrayList<>();
-        myTimer.cancel();
-        myTimer.purge();
-        myTimer = new Timer();
+        if(varifyInput(textFelderListe)) {
+            alarmList = new ArrayList<>();
+            myTimer.cancel();
+            myTimer.purge();
+            myTimer = new Timer();
 
+            for (int i = 0; i < textFelderListe.size(); i += 2) {
+
+                String stundeString = textFelderListe.get(i).getText().trim();
+
+                if(!stundeString.equals("")) {
+                    String minuteString = textFelderListe.get(i + 1).getText().trim();
+
+                    if(minuteString.equals("")) {
+                        minuteString = "00";
+                    }
+
+                    if(stundeString.length() < 2) {
+                        stundeString = "0" + stundeString;
+                    }
+
+                    if(minuteString.length() < 2) {
+                        minuteString = "0" + minuteString;
+                    }
+
+                    LocalDateTime parsedDate = getLocalDateTime(stundeString, minuteString);
+
+                    alarmList.add(parsedDate);
+                }
+            }
+        }
+
+
+    }
+
+    private LocalDateTime getLocalDateTime(String stundeString, String minuteString) {
         int jahr = LocalDateTime.now().getYear();
 
         long monat = LocalDateTime.now().getMonth().getValue();
-        System.out.println(monat);
 
         int tagDesMonats = LocalDateTime.now().getDayOfMonth();
-            String dateString;
+        String dateString;
 
         if(tagDesMonats < 10 && monat < 10) {
             dateString = "0" + tagDesMonats + " 0" + monat + " " + jahr + " ";
@@ -249,34 +274,48 @@ public class HelloController {
         } else {
             dateString = tagDesMonats + " " + monat + " " + jahr + " ";
         }
+        LocalDateTime parsedDate = LocalDateTime.parse(dateString + stundeString + ":" + minuteString + ":00", formatter);
+        return parsedDate;
+    }
 
-        System.out.println(dateString);
+    protected boolean varifyInput(ArrayList<TextField> textFelderListe) {
+        boolean isValid = true;
+
+
+        updateAllTextFieldValues(textFelderListe);
 
         for (int i = 0; i < textFelderListe.size(); i += 2) {
+            TextField stundeFeld = textFelderListe.get(i);
+            TextField minuteFeld = textFelderListe.get(i + 1);
+            String stundeText = stundeFeld.getText().trim();
+            String minuteText = minuteFeld.getText().trim();
+            isValid = stundeMinuteIsValid(stundeFeld, minuteFeld, stundeText, minuteText);
 
-            String stundeString = textFelderListe.get(i).getText().trim();
-
-            if(!stundeString.equals("")) {
-                String minuteString = textFelderListe.get(i + 1).getText().trim();
-
-                if(minuteString.equals("")) {
-                    minuteString = "00";
-                }
-
-                if(stundeString.length() < 2) {
-                    stundeString = "0" + stundeString;
-                }
-
-                if(minuteString.length() < 2) {
-                    minuteString = "0" + minuteString;
-                }
-
-                System.out.println(dateString + stundeString + ":" + minuteString + ":00");
-                LocalDateTime parsedDate = LocalDateTime.parse(dateString + stundeString + ":" + minuteString + ":00", formatter);
-
-                alarmList.add(parsedDate);
-            }
         }
+        return isValid;
+    }
+
+    private boolean stundeMinuteIsValid( TextField stundeFeld, TextField minuteFeld, String stundeText, String minuteText) {
+        Paint farbeGelb = Paint.valueOf("yellow");
+        Paint farbeWeiss = Paint.valueOf("white");
+        boolean isValid = true;
+
+        if(!stundeText.equals("")) {
+            try {
+                getLocalDateTime(stundeText, minuteText);
+                stundeFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
+                minuteFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
+
+            } catch (Exception e) {
+                isValid = false;
+                stundeFeld.setStyle("-fx-control-inner-background: #" + farbeGelb.toString().substring(2));
+                minuteFeld.setStyle("-fx-control-inner-background: #" + farbeGelb.toString().substring(2));
+            }
+        } else {
+            stundeFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
+            minuteFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
+        }
+        return isValid;
     }
 
     //ToDo überprüfen/einfügen bei focus Wechsel

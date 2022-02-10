@@ -1,5 +1,7 @@
 package com.example.lueftungsplan;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,12 +12,16 @@ import javafx.scene.control.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Paint;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -123,7 +129,6 @@ public class LueftungsErinnerungController {
 
 
             if(!stundeText.equals("") && !minuteFeld.isFocused()) {
-                System.out.println("updateAllTextFieldValues() Stunde Exists");
                 if(minuteText.equals("")) {
                     minuteText = "00";
                     minuteFeld.setText(minuteText);
@@ -151,7 +156,6 @@ public class LueftungsErinnerungController {
 
         int uhrzeit = 8;
         for (int i = 0; i < textFelderListe.size(); i += 2) {
-            System.out.println("fuelleTextFields()");
             textFelderListe.get(i).setText(uhrzeit + "");
             textFelderListe.get(i + 1).setText("30");
             uhrzeit++;
@@ -159,9 +163,23 @@ public class LueftungsErinnerungController {
     }
 
     @FXML
-    protected void onLadenButtonClick() {
+    protected void onLadenButtonClick() throws IOException {
+
         System.out.println("onLadenButtonClick()");
+
+        File file = chooseFile();
+
+        FileReader reader = new FileReader(file);
+
+        CSVReader csvReader = new CSVReader(reader);
+
+        String[] s = csvReader.readNext();
+
+        System.out.println(s[0] + " " + s[1]);
+
         fuelleTextFields(this.tfListe);
+
+        updateAllTextFieldValues(tfListe);
     }
 
     private void scheduleAllTasks(ArrayList<LocalDateTime> alarmZeitpunktListe) {
@@ -258,24 +276,29 @@ public class LueftungsErinnerungController {
     }
 
     private LocalDateTime getLocalDateTime(String stundeString, String minuteString) {
-        int jahr = LocalDateTime.now().getYear();
+        try{
+            int jahr = LocalDateTime.now().getYear();
 
-        long monat = LocalDateTime.now().getMonth().getValue();
+            long monat = LocalDateTime.now().getMonth().getValue();
 
-        int tagDesMonats = LocalDateTime.now().getDayOfMonth();
-        String dateString;
+            int tagDesMonats = LocalDateTime.now().getDayOfMonth();
+            String dateString;
 
-        if(tagDesMonats < 10 && monat < 10) {
-            dateString = "0" + tagDesMonats + " 0" + monat + " " + jahr + " ";
-        } else if(tagDesMonats < 10) {
-            dateString = "0" + tagDesMonats + " " + monat + " " + jahr + " ";
-        } else if(monat < 10) {
-            dateString = tagDesMonats + " 0" + monat + " " + jahr + " ";
-        } else {
-            dateString = tagDesMonats + " " + monat + " " + jahr + " ";
+            if(tagDesMonats < 10 && monat < 10) {
+                dateString = "0" + tagDesMonats + " 0" + monat + " " + jahr + " ";
+            } else if(tagDesMonats < 10) {
+                dateString = "0" + tagDesMonats + " " + monat + " " + jahr + " ";
+            } else if(monat < 10) {
+                dateString = tagDesMonats + " 0" + monat + " " + jahr + " ";
+            } else {
+                dateString = tagDesMonats + " " + monat + " " + jahr + " ";
+            }
+            LocalDateTime parsedDate = LocalDateTime.parse(dateString + stundeString + ":" + minuteString + ":00", formatter);
+            return parsedDate;
+        } catch (Exception e) {
+            return null;
         }
-        LocalDateTime parsedDate = LocalDateTime.parse(dateString + stundeString + ":" + minuteString + ":00", formatter);
-        return parsedDate;
+
     }
 
     protected boolean varifyInput(ArrayList<TextField> textFelderListe) {
@@ -300,8 +323,23 @@ public class LueftungsErinnerungController {
         Paint farbeWeiss = Paint.valueOf("white");
         boolean isValid = true;
 
-        if(!stundeText.equals("")) {
-            try {
+        stundeText = stundeText.trim();
+        minuteText = minuteText.trim();
+
+        System.out.println(stundeText + " " + minuteText + " " + getLocalDateTime(stundeText, "00"));
+        System.out.println(getLocalDateTime(stundeText, minuteText));
+        if(stundeText.equals("")) {
+            stundeFeld.setStyle("-fx-control-inner-background: #" + farbeWeiss.toString().substring(2));
+            minuteFeld.setStyle("-fx-control-inner-background: #" + farbeWeiss.toString().substring(2));
+        } else if (minuteText.equals("") && getLocalDateTime(stundeText, "00") != null) {
+            stundeFeld.setStyle("-fx-control-inner-background: #" + farbeWeiss.toString().substring(2));
+            minuteFeld.setStyle("-fx-control-inner-background: #" + farbeWeiss.toString().substring(2));
+        } else if(getLocalDateTime(stundeText, minuteText) == null) {
+            stundeFeld.setStyle("-fx-control-inner-background: #" + farbeGelb.toString().substring(2));
+            minuteFeld.setStyle("-fx-control-inner-background: #" + farbeGelb.toString().substring(2));
+            isValid = false;
+
+            /*try {
                 getLocalDateTime(stundeText, minuteText);
                 stundeFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
                 minuteFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
@@ -310,17 +348,13 @@ public class LueftungsErinnerungController {
                 isValid = false;
                 stundeFeld.setStyle("-fx-control-inner-background: #" + farbeGelb.toString().substring(2));
                 minuteFeld.setStyle("-fx-control-inner-background: #" + farbeGelb.toString().substring(2));
-            }
+            }*/
         } else {
             stundeFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
             minuteFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
         }
         return isValid;
     }
-
-    //ToDo überprüfen/einfügen bei focus Wechsel
-
-
 
     @FXML
     protected void onStartButtonClick() {
@@ -356,4 +390,55 @@ public class LueftungsErinnerungController {
         tfNext.requestFocus();
     }
 
+    @FXML
+    protected void onSpeichernButtonClick() throws URISyntaxException, IOException {
+        auslesenTextFields(tfListe);
+
+        //File file = new File("C:\\Users\\van_loechtern_felix\\eclipse-workspace\\lueftungsPlan\\src\\main\\resources\\newTest.csv");
+
+        File file = chooseFile();
+
+        try {
+            // create FileWriter object with file as parameter
+            FileWriter outputfile = new FileWriter(file);
+
+            // create CSVWriter object filewriter object as parameter
+            CSVWriter csvWriter = new CSVWriter(outputfile);
+
+            // adding header to csv
+            String[] header = { "Stunde", "Minute" };
+            csvWriter.writeNext(header);
+
+            for (LocalDateTime ldt : alarmList) {
+                System.out.println(ldt.getHour() + " " + ldt.getMinute());
+                String[] data = {ldt.getHour() + "", ldt.getMinute() + ""};
+                csvWriter.writeNext(data);
+            }
+
+            // closing csvWriter connection
+            csvWriter.close();
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public File chooseFile() {
+
+        FileChooser fileChooserDat = new FileChooser();
+        File defaultPath = new File("src/Media");
+        fileChooserDat.setInitialDirectory(defaultPath);
+        fileChooserDat.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("CSV Files", "*.csv")
+        );
+        Stage stage = (Stage) ueberschriftLabel.getScene().getWindow();
+
+        File file = fileChooserDat.showOpenDialog(stage);
+
+        fileChooserDat.setInitialDirectory(new File(file.getParent()));
+
+        return file;
+
+    }
 }

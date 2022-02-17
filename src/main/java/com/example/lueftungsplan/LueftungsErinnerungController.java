@@ -12,7 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -30,50 +29,15 @@ public class LueftungsErinnerungController {
 
     @FXML private Label ueberschriftLabel = new Label();
 
-    @FXML private TextField tf1Stunde = new TextField();
-    @FXML private TextField tf1Minute = new TextField();
-    @FXML private TextField tf2Stunde = new TextField();
-    @FXML private TextField tf2Minute = new TextField();
-    @FXML private TextField tf3Stunde = new TextField();
-    @FXML private TextField tf3Minute = new TextField();
-    @FXML private TextField tf4Stunde = new TextField();
-    @FXML private TextField tf4Minute = new TextField();
-    @FXML private TextField tf5Stunde = new TextField();
-    @FXML private TextField tf5Minute = new TextField();
-    @FXML private TextField tf6Stunde = new TextField();
-    @FXML private TextField tf6Minute = new TextField();
-    @FXML private TextField tf7Stunde = new TextField();
-    @FXML private TextField tf7Minute = new TextField();
-    @FXML private TextField tf8Stunde = new TextField();
-    @FXML private TextField tf8Minute = new TextField();
-    @FXML private TextField tf9Stunde = new TextField();
-    @FXML private TextField tf9Minute = new TextField();
-    @FXML private TextField tf10Stunde = new TextField();
-    @FXML private TextField tf10Minute = new TextField();
-    @FXML private TextField tf11Stunde = new TextField();
-    @FXML private TextField tf11Minute = new TextField();
-    @FXML private TextField tf12Stunde = new TextField();
-    @FXML private TextField tf12Minute = new TextField();
-    @FXML private TextField tf13Stunde = new TextField();
-    @FXML private TextField tf13Minute = new TextField();
-    @FXML private TextField tf14Stunde = new TextField();
-    @FXML private TextField tf14Minute = new TextField();
-    @FXML private TextField tf15Stunde = new TextField();
-    @FXML private TextField tf15Minute = new TextField();
-    @FXML private TextField tf16Stunde = new TextField();
-    @FXML private TextField tf16Minute = new TextField();
-
     @FXML TableView tb = new TableView();
     @FXML TableColumn<Alarm, String > c1= new TableColumn();
 
-    private ArrayList<Alarm> alarmClassList = new ArrayList<>();
+    private ArrayList<Alarm> alarmListe = new ArrayList<>();
 
     public Timer myTimer = new Timer();
-    private ArrayList<LocalDateTime> alarmListToBeReplaced = new ArrayList<>();
     private DateTimeFormatter simpleTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private Media media = new Media(new File("src/Media/Air-raid-siren.mp3").toURI().toString());
     private MediaPlayer mediaPlayer = new MediaPlayer(media);
-    private ArrayList<TextField> tfListe;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM yyyy HH:mm:ss", Locale.ROOT);
 
     public static void  showDialog(LueftungsErinnerungController controller) throws IOException {
@@ -94,128 +58,13 @@ public class LueftungsErinnerungController {
 
     public void initialize() {
 
-        c1.setCellValueFactory(new PropertyValueFactory<>("alarmZeitpunkt"));
+        tb.setEditable(true);
 
+        c1.setCellValueFactory(new PropertyValueFactory<>("alarmZeitpunktString"));
 
         ueberschriftLabel.setText("Lüftungserinnerungsprogramm");
-
-
-        tfListe = new ArrayList<>(Arrays.asList(tf1Stunde, tf1Minute, tf2Stunde, tf2Minute, tf3Stunde, tf3Minute, tf4Stunde, tf4Minute, tf5Stunde, tf5Minute,
-                tf6Stunde, tf6Minute, tf7Stunde, tf7Minute, tf8Stunde, tf8Minute, tf9Stunde, tf9Minute, tf10Stunde, tf10Minute, tf11Stunde, tf11Minute, tf12Stunde, tf12Minute,
-                tf13Stunde, tf13Minute, tf14Stunde, tf14Minute, tf15Stunde, tf15Minute, tf16Stunde, tf16Minute));
-
-        for (TextField tf : tfListe) {
-            setOnFocusEvent(tf);
-        }
-
     }
 
-    //sets Chane Listener on a Textfield and Triggers the updateAllTextFields() Method when the respective Textfield is NO LONGER focused after being previously focused
-    private void setOnFocusEvent(TextField tf) {
-        tf.focusedProperty().addListener((arg0, oldPropertyValue, newPropertyValue) -> {
-            if (!newPropertyValue)
-            {
-                updateAllTextFieldValues(tfListe);
-            }
-        });
-    }
-
-    /* WICHTIG! stundeText und minuteText müssen bei jeder änderung am inhalt der Textfelder geändert werden damit die Späteren überprüfungen
-    anhand von stundeText bzw. minuteText ordnungsgemäß funktionieren */
-
-    private void updateAllTextFieldValues(ArrayList<TextField> textFelderListe) {
-        for (int i = 0; i < textFelderListe.size(); i += 2) {
-
-            TextField stundeFeld = textFelderListe.get(i);
-            TextField minuteFeld = textFelderListe.get(i + 1);
-            String stundeText = stundeFeld.getText().trim();
-            String minuteText = minuteFeld.getText().trim();
-
-
-
-            if(!stundeText.equals("") && !minuteFeld.isFocused()) {
-                if(minuteText.equals("")) {
-                    minuteText = "00";
-                    minuteFeld.setText(minuteText);
-                }
-
-                if(stundeText.length() < 2) {
-                    stundeText = "0" + stundeText;
-                    stundeFeld.setText(stundeText);
-                }
-
-                if(minuteText.length() < 2) {
-                    minuteText = "0" + minuteText;
-                    minuteFeld.setText(minuteText);
-                }
-
-            } else if((!stundeFeld.isFocused()) && stundeText.equals("")) {
-                minuteText = "";
-                minuteFeld.setText(minuteText);
-            }
-            stundeMinuteIsValid(stundeFeld, minuteFeld, stundeText,minuteText);
-        }
-    }
-
-    private void fuelleTextFields(ArrayList<String> textForFieldsList ,ArrayList<TextField> textFelderList) {
-
-        for (int i = 0; i < textFelderList.size(); i += 2) {
-            try{
-                textFelderList.get(i).setText(textForFieldsList.get(i));
-                textFelderList.get(i + 1).setText(textForFieldsList.get(i + 1));
-            } catch (Exception e) {
-                break;
-            }
-        }
-    }
-
-    @FXML
-    protected void onLadenButtonClick() throws IOException {
-
-        File file = chooseFile();
-        FileReader reader = new FileReader(file);
-        CSVReader csvReader = new CSVReader(reader);
-
-        List<String[]> sList = csvReader.readAll();
-        ArrayList<String> textForFieldsList = new ArrayList<>();
-
-        for(String[] s : sList) {
-
-            String stundeString = s[0].trim();
-            String minuteString = s[1].trim();
-
-            if(minuteString.equals("")) {
-                minuteString = "00";
-            }
-
-            if(stundeString.length() < 2) {
-                stundeString = "0" + stundeString;
-            }
-
-            if(minuteString.length() < 2) {
-                minuteString = "0" + minuteString;
-            }
-
-            System.out.println(stundeString + " " + minuteString);
-            if(getLocalDateTime(stundeString, minuteString) != null) {
-
-                //TODO Remove textForFieldsList.add, Remove FuelleTextFieldValues
-
-                Alarm alarm = new Alarm(getLocalDateTime(stundeString, minuteString));
-                alarmClassList.add(alarm);
-
-                tb.getItems().add(alarm);
-
-                textForFieldsList.add(stundeString);
-                textForFieldsList.add(minuteString);
-            }
-        }
-
-
-        fuelleTextFields(textForFieldsList ,this.tfListe);
-
-        updateAllTextFieldValues(tfListe);
-    }
 
     private void scheduleAllTasks(ArrayList<Alarm> alarmZeitpunktListe) {
         myTimer.cancel();
@@ -275,8 +124,14 @@ public class LueftungsErinnerungController {
         dialogStage.showAndWait();
     }
 
+    @FXML
+    protected void onStartButtonClick() {
+        auslesenTableView();
+        scheduleAllTasks(alarmListe);
+    }
+
     private void auslesenTableView() {
-        alarmClassList = new ArrayList<>();
+        alarmListe = new ArrayList<>();
         myTimer.cancel();
         myTimer.purge();
         myTimer = new Timer();
@@ -284,216 +139,46 @@ public class LueftungsErinnerungController {
          System.out.println(tb.getItems());
          for(Object alarmObject : tb.getItems()) {
              Alarm alarm = (Alarm) alarmObject;
-             alarmClassList.add(alarm);
+             alarmListe.add(alarm);
          }
-
-
     }
-
-    private void auslesenTextFields(ArrayList<TextField> textFelderListe) {
-        if(varifyInput(textFelderListe)) {
-            alarmListToBeReplaced = new ArrayList<>();
-            myTimer.cancel();
-            myTimer.purge();
-            myTimer = new Timer();
-
-            for (int i = 0; i < textFelderListe.size(); i += 2) {
-
-                String stundeString = textFelderListe.get(i).getText().trim();
-
-                if(!stundeString.equals("")) {
-                    String minuteString = textFelderListe.get(i + 1).getText().trim();
-
-                    //TODO Potenziell entferne Code Dopplung hier. (code schon vorhanden in getLocalDateTime()
-                    /*if(minuteString.equals("")) {
-                        minuteString = "00";
-                    }
-
-                    if(stundeString.length() < 2) {
-                        stundeString = "0" + stundeString;
-                    }
-
-                    if(minuteString.length() < 2) {
-                        minuteString = "0" + minuteString;
-                    }*/
-
-                    LocalDateTime parsedDate = getLocalDateTime(stundeString, minuteString);
-
-                    alarmListToBeReplaced.add(parsedDate);
-                }
-            }
-        }
-
-
-    }
-
-    private LocalDateTime getLocalDateTime(String stundeString, String minuteString) {
-        try{
-
-            if(minuteString.equals("")) {
-                minuteString = "00";
-            }
-
-            if(stundeString.length() < 2) {
-                stundeString = "0" + stundeString;
-            }
-
-            if(minuteString.length() < 2) {
-                minuteString = "0" + minuteString;
-            }
-
-            int jahr = LocalDateTime.now().getYear();
-
-            long monat = LocalDateTime.now().getMonth().getValue();
-
-            int tagDesMonats = LocalDateTime.now().getDayOfMonth();
-            String dateString;
-
-            if(tagDesMonats < 10 && monat < 10) {
-                dateString = "0" + tagDesMonats + " 0" + monat + " " + jahr + " ";
-            } else if(tagDesMonats < 10) {
-                dateString = "0" + tagDesMonats + " " + monat + " " + jahr + " ";
-            } else if(monat < 10) {
-                dateString = tagDesMonats + " 0" + monat + " " + jahr + " ";
-            } else {
-                dateString = tagDesMonats + " " + monat + " " + jahr + " ";
-            }
-            LocalDateTime parsedDate = LocalDateTime.parse(dateString + stundeString + ":" + minuteString + ":00", formatter);
-            return parsedDate;
-        } catch (Exception e) {
-            return null;
-        }
-
-    }
-
-    protected boolean varifyInput(ArrayList<TextField> textFelderListe) {
-        boolean isValid = true;
-
-
-        updateAllTextFieldValues(textFelderListe);
-
-        for (int i = 0; i < textFelderListe.size(); i += 2) {
-            TextField stundeFeld = textFelderListe.get(i);
-            TextField minuteFeld = textFelderListe.get(i + 1);
-            String stundeText = stundeFeld.getText().trim();
-            String minuteText = minuteFeld.getText().trim();
-            isValid = stundeMinuteIsValid(stundeFeld, minuteFeld, stundeText, minuteText);
-
-        }
-        return isValid;
-    }
-
-    private boolean stundeMinuteIsValid( TextField stundeFeld, TextField minuteFeld, String stundeText, String minuteText) {
-        Paint farbeGelb = Paint.valueOf("yellow");
-        Paint farbeWeiss = Paint.valueOf("white");
-        boolean isValid = true;
-
-        stundeText = stundeText.trim();
-        minuteText = minuteText.trim();
-
-        if(stundeText.equals("")) {
-            stundeFeld.setStyle("-fx-control-inner-background: #" + farbeWeiss.toString().substring(2));
-            minuteFeld.setStyle("-fx-control-inner-background: #" + farbeWeiss.toString().substring(2));
-        } else if (minuteText.equals("") && getLocalDateTime(stundeText, "00") != null) {
-            stundeFeld.setStyle("-fx-control-inner-background: #" + farbeWeiss.toString().substring(2));
-            minuteFeld.setStyle("-fx-control-inner-background: #" + farbeWeiss.toString().substring(2));
-        } else if(getLocalDateTime(stundeText, minuteText) == null) {
-            stundeFeld.setStyle("-fx-control-inner-background: #" + farbeGelb.toString().substring(2));
-            minuteFeld.setStyle("-fx-control-inner-background: #" + farbeGelb.toString().substring(2));
-            isValid = false;
-
-            /*try {
-                getLocalDateTime(stundeText, minuteText);
-                stundeFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
-                minuteFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
-
-            } catch (Exception e) {
-                isValid = false;
-                stundeFeld.setStyle("-fx-control-inner-background: #" + farbeGelb.toString().substring(2));
-                minuteFeld.setStyle("-fx-control-inner-background: #" + farbeGelb.toString().substring(2));
-            }*/
-        } else {
-            stundeFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
-            minuteFeld.setStyle("-fx-control-inner-background: #"+ farbeWeiss.toString().substring(2));
-        }
-        return isValid;
-    }
-
     @FXML
-    protected void onStartButtonClick() {
-        auslesenTableView();
-        auslesenTextFields(this.tfListe);
-        scheduleAllTasks(alarmClassList);
+    protected void onLadenButtonClick() throws IOException {
+
+        File file = chooseFile();
+        FileReader reader = new FileReader(file);
+        CSVReader csvReader = new CSVReader(reader);
+
+        List<String[]> sList = csvReader.readAll();
+
+        for(String[] s : sList) {
+
+            String zeitpunktString = s[0];
+
+            if (getLocalDateTime(zeitpunktString) != null) {
+                Alarm a = new Alarm(getLocalDateTime(zeitpunktString));
+                tb.getItems().add(a);
+            }
+        }
     }
-
-    @FXML
-    protected void onSchliessenButtonClick() {
-        Stage stage = (Stage) ueberschriftLabel.getScene().getWindow();
-        closeWindow(stage);
-    }
-
-    protected void closeWindow(Stage stage) {
-        myTimer.cancel();
-        myTimer = null;
-        stage.close();
-        System.exit(1);
-    }
-
-    @FXML
-    protected void onTextFieldEnterKeyPress() {
-        Stage stage = (Stage) ueberschriftLabel.getScene().getWindow();
-        TextField tfMomentan = (TextField) stage.getScene().getFocusOwner();
-        int indexMomentan = this.tfListe.indexOf(tfMomentan);
-        TextField tfNext;
-
-        // 32 ... 0 - 31
-        int indexNext = (indexMomentan + 1) % this.tfListe.size();
-        tfNext = this.tfListe.get(indexNext);
-
-        tfNext.requestFocus();
-    }
-
     @FXML
     protected void onSpeichernButtonClick() throws URISyntaxException, IOException {
-        auslesenTextFields(tfListe);
-
-        //File file = new File("C:\\Users\\van_loechtern_felix\\eclipse-workspace\\lueftungsPlan\\src\\main\\resources\\newTest.csv");
+        auslesenTableView();
 
         File file = chooseFile();
 
         try {
-            // create FileWriter object with file as parameter
             FileWriter outputfile = new FileWriter(file);
-
-            // create CSVWriter object filewriter object as parameter
             CSVWriter csvWriter = new CSVWriter(outputfile);
-
-            // adding header to csv
             String[] header = { "Stunde", "Minute" };
             csvWriter.writeNext(header);
 
-            for (LocalDateTime ldt : alarmListToBeReplaced) {
-                String stundeString = ldt.getHour() + "";
-                String minuteString = ldt.getMinute() + "";
+            for (Alarm alarm : alarmListe) {
 
-                if(minuteString.equals("")) {
-                    minuteString = "00";
-                }
-
-                if(stundeString.length() < 2) {
-                    stundeString = "0" + stundeString;
-                }
-
-                if(minuteString.length() < 2) {
-                    minuteString = "0" + minuteString;
-                }
-
-
-                String[] data = {stundeString, minuteString};
+                String[] data = {alarm.getAlarmZeitpunktString()};
                 csvWriter.writeNext(data);
             }
 
-            // closing csvWriter connection
             csvWriter.close();
         }
         catch (IOException e) {
@@ -517,5 +202,61 @@ public class LueftungsErinnerungController {
 
         return file;
 
+    }
+
+
+    @FXML
+    protected void onSchliessenButtonClick() {
+        Stage stage = (Stage) ueberschriftLabel.getScene().getWindow();
+        closeWindow(stage);
+    }
+
+    protected void closeWindow(Stage stage) {
+        myTimer.cancel();
+        myTimer = null;
+        stage.close();
+        System.exit(1);
+    }
+
+    public LocalDateTime getLocalDateTime(String zeitpunkt) {
+        try {
+
+            String[] stundeUndMinuteArr = zeitpunkt.split(":");
+            String stundeString = stundeUndMinuteArr[0];
+            String minuteString = stundeUndMinuteArr[1];
+
+            if (minuteString.equals("")) {
+                minuteString = "00";
+            }
+
+            if (stundeString.length() < 2) {
+                stundeString = "0" + stundeString;
+            }
+
+            if (minuteString.length() < 2) {
+                minuteString = "0" + minuteString;
+            }
+
+            int jahr = LocalDateTime.now().getYear();
+
+            long monat = LocalDateTime.now().getMonth().getValue();
+
+            int tagDesMonats = LocalDateTime.now().getDayOfMonth();
+            String dateString;
+
+            if (tagDesMonats < 10 && monat < 10) {
+                dateString = "0" + tagDesMonats + " 0" + monat + " " + jahr + " ";
+            } else if (tagDesMonats < 10) {
+                dateString = "0" + tagDesMonats + " " + monat + " " + jahr + " ";
+            } else if (monat < 10) {
+                dateString = tagDesMonats + " 0" + monat + " " + jahr + " ";
+            } else {
+                dateString = tagDesMonats + " " + monat + " " + jahr + " ";
+            }
+            LocalDateTime parsedDate = LocalDateTime.parse(dateString + stundeString + ":" + minuteString + ":00", formatter);
+            return parsedDate;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

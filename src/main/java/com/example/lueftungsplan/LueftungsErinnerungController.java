@@ -9,6 +9,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Paint;
@@ -65,7 +66,10 @@ public class LueftungsErinnerungController {
     @FXML private TextField tf16Stunde = new TextField();
     @FXML private TextField tf16Minute = new TextField();
 
-    //TODO AutoFill
+    @FXML TableView tb = new TableView();
+    @FXML TableColumn<Alarm, String > c1= new TableColumn();
+
+    private ArrayList<Alarm> alarmClassList = new ArrayList<>();
 
     public Timer myTimer = new Timer();
     private ArrayList<LocalDateTime> alarmList = new ArrayList<>();
@@ -92,6 +96,10 @@ public class LueftungsErinnerungController {
     }
 
     public void initialize() {
+
+        c1.setCellValueFactory(new PropertyValueFactory<>("alarmZeitpunkt"));
+
+
         ueberschriftLabel.setText("Lüftungserinnerungsprogramm");
 
 
@@ -152,32 +160,60 @@ public class LueftungsErinnerungController {
         }
     }
 
-    private void fuelleTextFields(ArrayList<TextField> textFelderListe) {
+    private void fuelleTextFields(ArrayList<String> textForFieldsList ,ArrayList<TextField> textFelderList) {
 
-        int uhrzeit = 8;
-        for (int i = 0; i < textFelderListe.size(); i += 2) {
-            textFelderListe.get(i).setText(uhrzeit + "");
-            textFelderListe.get(i + 1).setText("30");
-            uhrzeit++;
+        for (int i = 0; i < textFelderList.size(); i += 2) {
+            try{
+                textFelderList.get(i).setText(textForFieldsList.get(i));
+                textFelderList.get(i + 1).setText(textForFieldsList.get(i + 1));
+            } catch (Exception e) {
+                break;
+            }
         }
     }
 
     @FXML
     protected void onLadenButtonClick() throws IOException {
 
-        System.out.println("onLadenButtonClick()");
-
         File file = chooseFile();
-
         FileReader reader = new FileReader(file);
-
         CSVReader csvReader = new CSVReader(reader);
 
-        String[] s = csvReader.readNext();
+        List<String[]> sList = csvReader.readAll();
+        ArrayList<String> textForFieldsList = new ArrayList<>();
 
-        System.out.println(s[0] + " " + s[1]);
+        for(String[] s : sList) {
 
-        fuelleTextFields(this.tfListe);
+            String stundeString = s[0].trim();
+            String minuteString = s[1].trim();
+
+            if(minuteString.equals("")) {
+                minuteString = "00";
+            }
+
+            if(stundeString.length() < 2) {
+                stundeString = "0" + stundeString;
+            }
+
+            if(minuteString.length() < 2) {
+                minuteString = "0" + minuteString;
+            }
+
+            System.out.println(stundeString + " " + minuteString);
+            if(getLocalDateTime(stundeString, minuteString) != null) {
+
+                Alarm alarm = new Alarm(getLocalDateTime(stundeString, minuteString));
+                alarmClassList.add(alarm);
+
+                tb.getItems().add(alarm);
+
+                textForFieldsList.add(stundeString);
+                textForFieldsList.add(minuteString);
+            }
+        }
+
+
+        fuelleTextFields(textForFieldsList ,this.tfListe);
 
         updateAllTextFieldValues(tfListe);
     }
@@ -253,7 +289,8 @@ public class LueftungsErinnerungController {
                 if(!stundeString.equals("")) {
                     String minuteString = textFelderListe.get(i + 1).getText().trim();
 
-                    if(minuteString.equals("")) {
+                    //TODO Potenziell entferne Code Dopplung hier. (code schon vorhanden in getLocalDateTime()
+                    /*if(minuteString.equals("")) {
                         minuteString = "00";
                     }
 
@@ -263,7 +300,7 @@ public class LueftungsErinnerungController {
 
                     if(minuteString.length() < 2) {
                         minuteString = "0" + minuteString;
-                    }
+                    }*/
 
                     LocalDateTime parsedDate = getLocalDateTime(stundeString, minuteString);
 
@@ -277,6 +314,19 @@ public class LueftungsErinnerungController {
 
     private LocalDateTime getLocalDateTime(String stundeString, String minuteString) {
         try{
+
+            if(minuteString.equals("")) {
+                minuteString = "00";
+            }
+
+            if(stundeString.length() < 2) {
+                stundeString = "0" + stundeString;
+            }
+
+            if(minuteString.length() < 2) {
+                minuteString = "0" + minuteString;
+            }
+
             int jahr = LocalDateTime.now().getYear();
 
             long monat = LocalDateTime.now().getMonth().getValue();
@@ -326,8 +376,6 @@ public class LueftungsErinnerungController {
         stundeText = stundeText.trim();
         minuteText = minuteText.trim();
 
-        System.out.println(stundeText + " " + minuteText + " " + getLocalDateTime(stundeText, "00"));
-        System.out.println(getLocalDateTime(stundeText, minuteText));
         if(stundeText.equals("")) {
             stundeFeld.setStyle("-fx-control-inner-background: #" + farbeWeiss.toString().substring(2));
             minuteFeld.setStyle("-fx-control-inner-background: #" + farbeWeiss.toString().substring(2));
@@ -379,7 +427,6 @@ public class LueftungsErinnerungController {
     protected void onTextFieldEnterKeyPress() {
         Stage stage = (Stage) ueberschriftLabel.getScene().getWindow();
         TextField tfMomentan = (TextField) stage.getScene().getFocusOwner();
-        System.out.println("onTextFieldEnterKeyPress()");
         int indexMomentan = this.tfListe.indexOf(tfMomentan);
         TextField tfNext;
 
@@ -410,8 +457,23 @@ public class LueftungsErinnerungController {
             csvWriter.writeNext(header);
 
             for (LocalDateTime ldt : alarmList) {
-                System.out.println(ldt.getHour() + " " + ldt.getMinute());
-                String[] data = {ldt.getHour() + "", ldt.getMinute() + ""};
+                String stundeString = ldt.getHour() + "";
+                String minuteString = ldt.getMinute() + "";
+
+                if(minuteString.equals("")) {
+                    minuteString = "00";
+                }
+
+                if(stundeString.length() < 2) {
+                    stundeString = "0" + stundeString;
+                }
+
+                if(minuteString.length() < 2) {
+                    minuteString = "0" + minuteString;
+                }
+
+
+                String[] data = {stundeString, minuteString};
                 csvWriter.writeNext(data);
             }
 
@@ -419,7 +481,6 @@ public class LueftungsErinnerungController {
             csvWriter.close();
         }
         catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

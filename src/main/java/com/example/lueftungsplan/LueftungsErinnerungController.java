@@ -3,6 +3,7 @@ package com.example.lueftungsplan;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -10,6 +11,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
@@ -24,13 +26,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 public class LueftungsErinnerungController {
 
-    @FXML private Label ueberschriftLabel = new Label();
+    @FXML
+    private Label ueberschriftLabel = new Label();
 
-    @FXML TableView tb = new TableView();
-    @FXML TableColumn<Alarm, String > c1= new TableColumn();
+    @FXML
+    TableView tb = new TableView();
+    @FXML
+    TableColumn<Alarm, String> columnZeitpunktString = new TableColumn();
 
     private ArrayList<Alarm> alarmListe = new ArrayList<>();
 
@@ -40,7 +46,7 @@ public class LueftungsErinnerungController {
     private MediaPlayer mediaPlayer = new MediaPlayer(media);
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM yyyy HH:mm:ss", Locale.ROOT);
 
-    public static void  showDialog(LueftungsErinnerungController controller) throws IOException {
+    public static void showDialog(LueftungsErinnerungController controller) throws IOException {
         Stage stage = new Stage();
 
         FXMLLoader fxmlLoader = new FXMLLoader(LueftungsErinnerungApplication.class.getResource("hello-view.fxml"));
@@ -53,14 +59,35 @@ public class LueftungsErinnerungController {
             controller.closeWindow(stage);
         });
 
-       stage.show();
+        stage.show();
     }
 
     public void initialize() {
 
         tb.setEditable(true);
 
-        c1.setCellValueFactory(new PropertyValueFactory<>("alarmZeitpunktString"));
+        columnZeitpunktString.setCellValueFactory(new PropertyValueFactory<>("alarmZeitpunktString"));
+
+        columnZeitpunktString.setCellFactory(TextFieldTableCell.forTableColumn());
+
+        columnZeitpunktString.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Alarm, String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<Alarm, String> event) {
+                Alarm alarm = (Alarm) tb.getSelectionModel().getSelectedItem();
+                if(getLocalDateTime(event.getNewValue()) != null) {
+                    Alarm a = event.getRowValue();
+                    a.setAlarmZeitpunkt(getLocalDateTime(event.getNewValue()));
+                    a.setAlarmZeitpunktString();
+                    System.out.println(event.getNewValue());
+
+                    tb.getItems().set(tb.getItems().indexOf(alarm), a);
+                } else {
+                    tb.getItems().set(tb.getItems().indexOf(alarm), alarm);
+                    //TODO Potenteilla add a Method to tell the User his entry was incorrect
+
+                }
+            }
+        });
 
         ueberschriftLabel.setText("Lüftungserinnerungsprogramm");
     }
@@ -73,7 +100,7 @@ public class LueftungsErinnerungController {
 
         for (Alarm alarm : alarmZeitpunktListe) {
             LocalDateTime alarmZeitpunkt = alarm.getAlarmZeitpunkt();
-            if(alarmZeitpunkt.isAfter(LocalDateTime.now())) {
+            if (alarmZeitpunkt.isAfter(LocalDateTime.now())) {
                 System.out.println("Alarm: " + alarmZeitpunkt.format(simpleTimeFormatter));
 
                 Instant instant = alarmZeitpunkt.atZone(ZoneId.of("Europe/Berlin")).toInstant();
@@ -131,17 +158,24 @@ public class LueftungsErinnerungController {
     }
 
     private void auslesenTableView() {
+
         alarmListe = new ArrayList<>();
         myTimer.cancel();
         myTimer.purge();
         myTimer = new Timer();
 
-         System.out.println(tb.getItems());
-         for(Object alarmObject : tb.getItems()) {
-             Alarm alarm = (Alarm) alarmObject;
-             alarmListe.add(alarm);
-         }
+        System.out.println(tb.getItems());
+        for (Object alarmObject : tb.getItems()) {
+            try {
+                Alarm alarm = (Alarm) alarmObject;
+                alarmListe.add(alarm);
+            } catch (Exception e) {
+                //TODO Maybe at some point Make Method to Notify User abut falsche EIngabe
+            }
+
+        }
     }
+
     @FXML
     protected void onLadenButtonClick() throws IOException {
 
@@ -151,7 +185,7 @@ public class LueftungsErinnerungController {
 
         List<String[]> sList = csvReader.readAll();
 
-        for(String[] s : sList) {
+        for (String[] s : sList) {
 
             String zeitpunktString = s[0];
 
@@ -161,6 +195,7 @@ public class LueftungsErinnerungController {
             }
         }
     }
+
     @FXML
     protected void onSpeichernButtonClick() throws URISyntaxException, IOException {
         auslesenTableView();
@@ -170,7 +205,7 @@ public class LueftungsErinnerungController {
         try {
             FileWriter outputfile = new FileWriter(file);
             CSVWriter csvWriter = new CSVWriter(outputfile);
-            String[] header = { "Stunde", "Minute" };
+            String[] header = {"Stunde", "Minute"};
             csvWriter.writeNext(header);
 
             for (Alarm alarm : alarmListe) {
@@ -180,8 +215,7 @@ public class LueftungsErinnerungController {
             }
 
             csvWriter.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

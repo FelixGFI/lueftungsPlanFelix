@@ -172,7 +172,6 @@ public class LueftungsErinnerungController {
             } catch (Exception e) {
                 //TODO Maybe at some point Make Method to Notify User abut falsche EIngabe
             }
-
         }
     }
 

@@ -20,9 +20,6 @@ import javafx.stage.StageStyle;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -72,7 +69,7 @@ public class LueftungsErinnerungController {
     private ArrayList<Alarm> alarmClassList = new ArrayList<>();
 
     public Timer myTimer = new Timer();
-    private ArrayList<LocalDateTime> alarmList = new ArrayList<>();
+    private ArrayList<LocalDateTime> alarmListToBeReplaced = new ArrayList<>();
     private DateTimeFormatter simpleTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private Media media = new Media(new File("src/Media/Air-raid-siren.mp3").toURI().toString());
     private MediaPlayer mediaPlayer = new MediaPlayer(media);
@@ -202,6 +199,8 @@ public class LueftungsErinnerungController {
             System.out.println(stundeString + " " + minuteString);
             if(getLocalDateTime(stundeString, minuteString) != null) {
 
+                //TODO Remove textForFieldsList.add, Remove FuelleTextFieldValues
+
                 Alarm alarm = new Alarm(getLocalDateTime(stundeString, minuteString));
                 alarmClassList.add(alarm);
 
@@ -218,12 +217,13 @@ public class LueftungsErinnerungController {
         updateAllTextFieldValues(tfListe);
     }
 
-    private void scheduleAllTasks(ArrayList<LocalDateTime> alarmZeitpunktListe) {
+    private void scheduleAllTasks(ArrayList<Alarm> alarmZeitpunktListe) {
         myTimer.cancel();
         myTimer.purge();
         myTimer = new Timer();
 
-        for (LocalDateTime alarmZeitpunkt : alarmZeitpunktListe) {
+        for (Alarm alarm : alarmZeitpunktListe) {
+            LocalDateTime alarmZeitpunkt = alarm.getAlarmZeitpunkt();
             if(alarmZeitpunkt.isAfter(LocalDateTime.now())) {
                 System.out.println("Alarm: " + alarmZeitpunkt.format(simpleTimeFormatter));
 
@@ -275,9 +275,24 @@ public class LueftungsErinnerungController {
         dialogStage.showAndWait();
     }
 
+    private void auslesenTableView() {
+        alarmClassList = new ArrayList<>();
+        myTimer.cancel();
+        myTimer.purge();
+        myTimer = new Timer();
+
+         System.out.println(tb.getItems());
+         for(Object alarmObject : tb.getItems()) {
+             Alarm alarm = (Alarm) alarmObject;
+             alarmClassList.add(alarm);
+         }
+
+
+    }
+
     private void auslesenTextFields(ArrayList<TextField> textFelderListe) {
         if(varifyInput(textFelderListe)) {
-            alarmList = new ArrayList<>();
+            alarmListToBeReplaced = new ArrayList<>();
             myTimer.cancel();
             myTimer.purge();
             myTimer = new Timer();
@@ -304,7 +319,7 @@ public class LueftungsErinnerungController {
 
                     LocalDateTime parsedDate = getLocalDateTime(stundeString, minuteString);
 
-                    alarmList.add(parsedDate);
+                    alarmListToBeReplaced.add(parsedDate);
                 }
             }
         }
@@ -406,8 +421,9 @@ public class LueftungsErinnerungController {
 
     @FXML
     protected void onStartButtonClick() {
+        auslesenTableView();
         auslesenTextFields(this.tfListe);
-        scheduleAllTasks(alarmList);
+        scheduleAllTasks(alarmClassList);
     }
 
     @FXML
@@ -456,7 +472,7 @@ public class LueftungsErinnerungController {
             String[] header = { "Stunde", "Minute" };
             csvWriter.writeNext(header);
 
-            for (LocalDateTime ldt : alarmList) {
+            for (LocalDateTime ldt : alarmListToBeReplaced) {
                 String stundeString = ldt.getHour() + "";
                 String minuteString = ldt.getMinute() + "";
 
